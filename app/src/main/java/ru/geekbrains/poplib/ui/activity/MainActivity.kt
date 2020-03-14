@@ -2,6 +2,7 @@ package ru.geekbrains.poplib.ui.activity
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.geekbrains.poplib.R
@@ -17,13 +18,15 @@ class MainActivity : AppCompatActivity(), MainView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listener = View.OnClickListener {
-            presenter.counterClick(it.id)
+        btn_counter1.setOnClickListener {
+            presenter.counter1Click()
         }
-        
-        btn_counter1.setOnClickListener(listener)
-        btn_counter2.setOnClickListener(listener)
-        btn_counter3.setOnClickListener(listener)
+        btn_counter2.setOnClickListener {
+            presenter.counter2Click()
+        }
+        btn_counter3.setOnClickListener {
+            presenter.counter3Click()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -39,11 +42,21 @@ class MainActivity : AppCompatActivity(), MainView {
 //        }
     }
 
-    override fun setButtonText(index: Int, text: String) {
-        when(index){
-            0 -> btn_counter1.text = text
-            1 -> btn_counter2.text = text
-            2 -> btn_counter3.text = text
-        }
+    private fun setButtonText(button: Button, text: String) {
+        button.text = text
     }
+
+
+    override fun setTextCounter1(text: String) {
+        setButtonText(btn_counter1, text)
+    }
+
+    override fun setTextCounter2(text: String) {
+        setButtonText(btn_counter2, text)
+    }
+
+    override fun setTextCounter3(text: String) {
+        setButtonText(btn_counter3, text)
+    }
+
 }
