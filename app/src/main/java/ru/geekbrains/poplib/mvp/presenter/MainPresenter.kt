@@ -1,26 +1,31 @@
 package ru.geekbrains.poplib.mvp.presenter
 
-import ru.geekbrains.poplib.R
 import ru.geekbrains.poplib.mvp.model.CountersModel
 import ru.geekbrains.poplib.mvp.view.MainView
 
-class MainPresenter(val view: MainView, val model: CountersModel){
+class MainPresenter(val view: MainView, val model: CountersModel) {
 
-    fun counterClick(id: Int){
-        when(id){
-            R.id.btn_counter1 -> {
-                val nextValue = model.next(0)
-                view.setButtonText(0, nextValue.toString())
-            }
-            R.id.btn_counter2 -> {
-                val nextValue = model.next(1)
-                view.setButtonText(1, nextValue.toString())
-            }
-            R.id.btn_counter3 -> {
-                val nextValue = model.next(2)
-                view.setButtonText(2, nextValue.toString())
-            }
-        }
+    private fun getValue(index: Int): String {
+        val value = model.next(index)
+        return value.toString()
     }
+
+    fun counter1Click() {
+        val value = getValue(0)
+        view.setTextCounter1(value)
+    }
+
+    fun counter2Click() {
+        val value = getValue(1)
+        view.setTextCounter2(value)
+
+    }
+
+    fun counter3Click() {
+        val value = getValue(2)
+        view.setTextCounter3(value)
+
+    }
+
 
 }
