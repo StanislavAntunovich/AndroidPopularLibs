@@ -8,6 +8,7 @@ import ru.geekbrains.poplib.mvp.presenter.list.IRepositoryListPresenter
 import ru.geekbrains.poplib.mvp.view.MainView
 import ru.geekbrains.poplib.mvp.view.RepositoriesView
 import ru.geekbrains.poplib.mvp.view.list.RepositoryItemView
+import ru.geekbrains.poplib.navigation.Screens
 import ru.terrakok.cicerone.Router
 
 @InjectViewState
@@ -35,8 +36,7 @@ class RepositoriesPresenter(val repositoriesRepo: GithubRepositoriesRepo, val ro
         repositoryListPresenter.itemClickListener = { itemView ->
             val repository = repositoryListPresenter.repositories[itemView.pos]
 
-            //Практическое задание
-            //router.replaceScreen(Screens.RepositoryScreen(repository))
+            router.navigateTo(Screens.RepositoryScreen(repository))
         }
     }
 

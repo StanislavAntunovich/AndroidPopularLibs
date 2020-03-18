@@ -32,7 +32,7 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
         View.inflate(context, R.layout.fragment_repositories, null)
 
     @ProvidePresenter
-    fun providePresenter() = RepositoriesPresenter(GithubRepositoriesRepo(), App.instance.getRouter())
+    fun providePresenter() = RepositoriesPresenter(GithubRepositoriesRepo(), App.instance.router)
 
     override fun init() {
         rv_repos.layoutManager = LinearLayoutManager(context)
