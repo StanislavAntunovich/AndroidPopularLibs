@@ -2,6 +2,7 @@ package ru.geekbrains.poplib.ui
 
 import android.app.Application
 import ru.terrakok.cicerone.Cicerone
+import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
 
 class App : Application() {
@@ -9,7 +10,7 @@ class App : Application() {
         lateinit var instance: App
     }
 
-    val cicerone: Cicerone<Router> by lazy {
+    private val cicerone: Cicerone<Router> by lazy {
         Cicerone.create()
     }
 
@@ -18,7 +19,9 @@ class App : Application() {
         instance = this
     }
 
+    val navigatorHolder: NavigatorHolder
+        get() = cicerone.navigatorHolder
+    val router: Router
+        get() = cicerone.router
 
-    fun getNavigatorHolder() = cicerone.navigatorHolder
-    fun getRouter() = cicerone.router
 }

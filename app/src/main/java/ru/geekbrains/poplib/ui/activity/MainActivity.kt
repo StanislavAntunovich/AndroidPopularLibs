@@ -27,7 +27,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     @ProvidePresenter
-    fun providePresenter() = MainPresenter(App.instance.getRouter())
+    fun providePresenter() = MainPresenter(App.instance.router)
 
     override fun init() {
 
@@ -35,12 +35,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-        App.instance.getNavigatorHolder().setNavigator(navigator)
+        App.instance.navigatorHolder.setNavigator(navigator)
     }
 
     override fun onPause() {
         super.onPause()
-        App.instance.getNavigatorHolder().removeNavigator()
+        App.instance.navigatorHolder.removeNavigator()
     }
 
     override fun onBackPressed() {
