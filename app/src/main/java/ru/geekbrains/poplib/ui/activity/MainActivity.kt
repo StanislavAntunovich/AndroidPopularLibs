@@ -9,7 +9,6 @@ import ru.geekbrains.poplib.mvp.presenter.MainPresenter
 import ru.geekbrains.poplib.mvp.view.MainView
 import ru.geekbrains.poplib.ui.App
 import ru.geekbrains.poplib.ui.BackButtonListener
-import ru.geekbrains.poplib.ui.adapter.RepositoriesRVAdapter
 import ru.terrakok.cicerone.android.support.SupportAppNavigator
 
 class MainActivity : MvpAppCompatActivity(), MainView {
@@ -19,15 +18,13 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     @InjectPresenter
     lateinit var presenter: MainPresenter
 
-    var adapter: RepositoriesRVAdapter? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 
     @ProvidePresenter
-    fun providePresenter() = MainPresenter(App.instance.getRouter())
+    fun providePresenter() = MainPresenter(App.instance.router)
 
     override fun init() {
 
@@ -35,12 +32,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-        App.instance.getNavigatorHolder().setNavigator(navigator)
+        App.instance.navigatorHolder.setNavigator(navigator)
     }
 
     override fun onPause() {
         super.onPause()
-        App.instance.getNavigatorHolder().removeNavigator()
+        App.instance.navigatorHolder.removeNavigator()
     }
 
     override fun onBackPressed() {
@@ -54,4 +51,3 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
 
 }
-

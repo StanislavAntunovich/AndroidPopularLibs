@@ -1,8 +1,10 @@
 package ru.geekbrains.poplib.ui
 
 import android.app.Application
+import ru.geekbrains.poplib.BuildConfig
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.Router
+import timber.log.Timber
 
 class App : Application() {
     companion object {
@@ -16,9 +18,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        Timber.plant(Timber.DebugTree())
     }
 
 
-    fun getNavigatorHolder() = cicerone.navigatorHolder
-    fun getRouter() = cicerone.router
+    val navigatorHolder get() = cicerone.navigatorHolder
+    val router get() = cicerone.router
 }

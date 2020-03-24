@@ -4,6 +4,7 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.geekbrains.poplib.mvp.view.MainView
 import ru.geekbrains.poplib.navigation.Screens
+import ru.geekbrains.poplib.rxlearning.Sources
 import ru.terrakok.cicerone.Router
 
 @InjectViewState
@@ -13,6 +14,10 @@ class MainPresenter(val router: Router) : MvpPresenter<MainView>() {
         super.onFirstViewAttach()
         viewState.init()
         router.replaceScreen(Screens.RepositoriesScreen())
+
+        //Creation().exec()
+        //Operator().exec()
+        Sources().exec()
     }
 
     fun backClicked() {

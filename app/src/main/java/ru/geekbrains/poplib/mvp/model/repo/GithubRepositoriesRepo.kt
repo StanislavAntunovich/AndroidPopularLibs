@@ -11,5 +11,6 @@ class GithubRepositoriesRepo {
         GithubRepository("4", "name4", 400)
     )
 
+    //Сделать так, чтобы getRepos возвращал Observable и не через just
     fun getRepos() = repositories
 }

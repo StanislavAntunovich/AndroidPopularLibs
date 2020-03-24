@@ -1,4 +1,4 @@
-package ru.geekbrains.poplib.ui.fragments
+package ru.geekbrains.poplib.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,7 +32,7 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
         View.inflate(context, R.layout.fragment_repositories, null)
 
     @ProvidePresenter
-    fun providePresenter() = RepositoriesPresenter(GithubRepositoriesRepo(), App.instance.getRouter())
+    fun providePresenter() = RepositoriesPresenter(GithubRepositoriesRepo(), App.instance.router)
 
     override fun init() {
         rv_repos.layoutManager = LinearLayoutManager(context)
