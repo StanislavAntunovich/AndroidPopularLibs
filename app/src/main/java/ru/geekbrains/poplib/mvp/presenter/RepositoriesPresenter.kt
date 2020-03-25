@@ -1,8 +1,6 @@
 package ru.geekbrains.poplib.mvp.presenter
 
-import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -31,30 +29,12 @@ class RepositoriesPresenter(val mainScheduler: Scheduler, val repositoriesRepo: 
     }
 
     val repositoryListPresenter = RepositoryListPresenter()
-    var reposDisposable: Disposable? = null
-    val repositoriesObserver = object : Observer<GithubRepository> {
-        override fun onComplete() {
-            viewState.updateList()
-        }
 
-        override fun onSubscribe(d: Disposable?) {
-            repositoryListPresenter.repositories.clear()
-            reposDisposable = d
-        }
-
-        override fun onNext(t: GithubRepository) {
-            repositoryListPresenter.repositories.add(t)
-        }
-
-        override fun onError(e: Throwable?) {
-
-        }
-
-    }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
+        loadRepos()
 
         repositoryListPresenter.itemClickListener = { itemView ->
             val repository = repositoryListPresenter.repositories[itemView.pos]
@@ -62,19 +42,19 @@ class RepositoriesPresenter(val mainScheduler: Scheduler, val repositoriesRepo: 
         }
     }
 
-    fun onPaused() {
-        reposDisposable?.dispose()
-    }
 
-    fun onResume() {
-        loadRepos()
-    }
 
     fun loadRepos() {
         repositoriesRepo.getRepos()
             .subscribeOn(Schedulers.io())
             .observeOn(mainScheduler)
-            .subscribe(repositoriesObserver)
+            .subscribe({repos ->
+                repositoryListPresenter.repositories.clear()
+                repositoryListPresenter.repositories.addAll(repos)
+                viewState.updateList()
+            }, {error ->
+                Timber.e(error,"error in getting repos")
+            })
     }
 
     fun backClicked() : Boolean {

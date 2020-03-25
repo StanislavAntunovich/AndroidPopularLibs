@@ -1,6 +1,7 @@
 package ru.geekbrains.poplib.mvp.model.repo
 
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import ru.geekbrains.poplib.mvp.model.entity.GithubRepository
 
 class GithubRepositoriesRepo {
@@ -13,5 +14,7 @@ class GithubRepositoriesRepo {
     )
 
     //Сделать так, чтобы getRepos возвращал Observable и не через just
-    fun getRepos() = Observable.fromIterable(repositories)
+    fun getRepos() = Single.create<List<GithubRepository>> { emitter ->
+        emitter.onSuccess(repositories)
+    }
 }

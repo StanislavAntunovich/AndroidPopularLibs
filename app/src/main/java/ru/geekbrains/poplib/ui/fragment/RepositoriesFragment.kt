@@ -47,13 +47,4 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
 
     override fun backClicked() = presenter.backClicked()
 
-    override fun onPause() {
-        super.onPause()
-        presenter.onPaused()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.onResume()
-    }
 }
