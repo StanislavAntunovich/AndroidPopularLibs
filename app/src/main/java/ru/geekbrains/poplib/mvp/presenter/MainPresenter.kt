@@ -4,6 +4,7 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.geekbrains.poplib.mvp.view.MainView
 import ru.geekbrains.poplib.navigation.Screens
+import ru.geekbrains.poplib.rxlearning.EventBusEx
 import ru.geekbrains.poplib.rxlearning.Sources
 import ru.terrakok.cicerone.Router
 
@@ -17,7 +18,8 @@ class MainPresenter(val router: Router) : MvpPresenter<MainView>() {
 
         //Creation().exec()
         //Operator().exec()
-        Sources().exec()
+        //Sources().exec()
+        EventBusEx().exec()
     }
 
     fun backClicked() {
