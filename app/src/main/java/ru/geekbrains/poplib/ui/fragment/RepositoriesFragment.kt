@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_repositories.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
@@ -32,7 +33,7 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
         View.inflate(context, R.layout.fragment_repositories, null)
 
     @ProvidePresenter
-    fun providePresenter() = RepositoriesPresenter(GithubRepositoriesRepo(), App.instance.router)
+    fun providePresenter() = RepositoriesPresenter(AndroidSchedulers.mainThread(), GithubRepositoriesRepo(), App.instance.router)
 
     override fun init() {
         rv_repos.layoutManager = LinearLayoutManager(context)
@@ -45,4 +46,5 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
     }
 
     override fun backClicked() = presenter.backClicked()
+
 }

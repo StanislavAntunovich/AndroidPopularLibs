@@ -1,5 +1,7 @@
 package ru.geekbrains.poplib.mvp.presenter
 
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.geekbrains.poplib.mvp.model.entity.GithubRepository
@@ -9,9 +11,10 @@ import ru.geekbrains.poplib.mvp.view.RepositoriesView
 import ru.geekbrains.poplib.mvp.view.list.RepositoryItemView
 import ru.geekbrains.poplib.navigation.Screens
 import ru.terrakok.cicerone.Router
+import timber.log.Timber
 
 @InjectViewState
-class RepositoriesPresenter(val repositoriesRepo: GithubRepositoriesRepo, val router: Router) : MvpPresenter<RepositoriesView>() {
+class RepositoriesPresenter(val mainScheduler: Scheduler, val repositoriesRepo: GithubRepositoriesRepo, val router: Router) : MvpPresenter<RepositoriesView>() {
 
     class RepositoryListPresenter : IRepositoryListPresenter {
         val repositories = mutableListOf<GithubRepository>()
@@ -27,6 +30,7 @@ class RepositoriesPresenter(val repositoriesRepo: GithubRepositoriesRepo, val ro
 
     val repositoryListPresenter = RepositoryListPresenter()
 
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
@@ -38,12 +42,19 @@ class RepositoriesPresenter(val repositoriesRepo: GithubRepositoriesRepo, val ro
         }
     }
 
+
+
     fun loadRepos() {
-        repositoriesRepo.getRepos().let { repos ->
-            repositoryListPresenter.repositories.clear()
-            repositoryListPresenter.repositories.addAll(repos)
-            viewState.updateList()
-        }
+        repositoriesRepo.getRepos()
+            .subscribeOn(Schedulers.io())
+            .observeOn(mainScheduler)
+            .subscribe({repos ->
+                repositoryListPresenter.repositories.clear()
+                repositoryListPresenter.repositories.addAll(repos)
+                viewState.updateList()
+            }, {error ->
+                Timber.e(error,"error in getting repos")
+            })
     }
 
     fun backClicked() : Boolean {
