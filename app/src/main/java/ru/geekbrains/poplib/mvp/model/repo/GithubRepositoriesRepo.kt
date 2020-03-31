@@ -1,5 +1,7 @@
 package ru.geekbrains.poplib.mvp.model.repo
 
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.geekbrains.poplib.mvp.model.entity.GithubRepository
 
 class GithubRepositoriesRepo {
@@ -11,6 +13,7 @@ class GithubRepositoriesRepo {
         GithubRepository("4", "name4", 400)
     )
 
-    //Сделать так, чтобы getRepos возвращал Observable и не через just
-    fun getRepos() = repositories
+    fun getRepos() = Single.fromCallable {
+        repositories
+    }.subscribeOn(Schedulers.io())
 }
