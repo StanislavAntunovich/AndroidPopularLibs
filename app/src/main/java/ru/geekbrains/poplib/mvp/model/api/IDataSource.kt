@@ -12,4 +12,7 @@ import ru.geekbrains.poplib.mvp.model.entity.GithubUser
 interface IDataSource {
     @GET("/users/{user}")
     fun getUser(@Path("user") username: String): Single<GithubUser>
+
+    @GET
+    fun getRepos(@Url url: String): Single<List<GithubRepository>>
 }
