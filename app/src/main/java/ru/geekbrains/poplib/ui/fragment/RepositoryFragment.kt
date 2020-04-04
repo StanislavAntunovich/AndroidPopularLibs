@@ -10,6 +10,7 @@ import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.geekbrains.poplib.R
 import ru.geekbrains.poplib.mvp.model.entity.GithubRepository
+import ru.geekbrains.poplib.mvp.model.entity.room.RoomGithubRepository
 import ru.geekbrains.poplib.mvp.presenter.RepositoryPresenter
 import ru.geekbrains.poplib.mvp.view.RepositoryView
 import ru.geekbrains.poplib.ui.App
@@ -34,7 +35,10 @@ class RepositoryFragment : MvpAppCompatFragment(), RepositoryView, BackButtonLis
         View.inflate(context, R.layout.fragment_repository, null)
 
     @ProvidePresenter
-    fun providePresenter() = RepositoryPresenter(arguments!![REPOSITORY_KEY] as GithubRepository, App.instance.router)
+    fun providePresenter() = RepositoryPresenter(
+        arguments!![REPOSITORY_KEY] as GithubRepository,
+        App.instance.router
+    )
 
     override fun init() {
 

@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_repositories.*
 import moxy.MvpAppCompatFragment
@@ -18,6 +17,7 @@ import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.geekbrains.poplib.R
 import ru.geekbrains.poplib.mvp.model.api.ApiHolder
+import ru.geekbrains.poplib.mvp.model.entity.room.db.Database
 import ru.geekbrains.poplib.mvp.model.repo.GithubRepositoriesRepo
 import ru.geekbrains.poplib.mvp.model.repo.GithubUsersRepo
 import ru.geekbrains.poplib.mvp.presenter.RepositoriesPresenter
@@ -26,6 +26,7 @@ import ru.geekbrains.poplib.ui.App
 import ru.geekbrains.poplib.ui.BackButtonListener
 import ru.geekbrains.poplib.ui.adapter.RepositoriesRVAdapter
 import ru.geekbrains.poplib.ui.image.GlideImageLoader
+import ru.geekbrains.poplib.ui.network.AndroidNetworkStatus
 
 
 class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButtonListener {
@@ -42,6 +43,8 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
 
     var adapter: RepositoriesRVAdapter? = null
 
+    val networkStatus = AndroidNetworkStatus(App.instance)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         View.inflate(context, R.layout.fragment_repositories, null)
 
@@ -50,8 +53,8 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
     fun providePresenter() = RepositoriesPresenter(
         AndroidSchedulers.mainThread(),
         App.instance.router,
-        GithubRepositoriesRepo(),
-        GithubUsersRepo(ApiHolder.api)
+        GithubRepositoriesRepo(ApiHolder.api, networkStatus, Database.getInstance()),
+        GithubUsersRepo(ApiHolder.api, networkStatus, Database.getInstance())
     )
 
 

@@ -11,10 +11,13 @@ import ru.geekbrains.poplib.mvp.model.image.IImageLoader
 
 class GlideImageLoader : IImageLoader<ImageView> {
     override fun loadInto(url: String, container: ImageView) {
+        //Проверять наличие сети
+
         Glide.with(container.context)
             .asBitmap()
-            .load(url)
-            .listener(object : RequestListener<Bitmap>{
+            .load(url) //При отсутствии сети грузить с диска через ByteArray
+            .listener(object : RequestListener<Bitmap> {
+
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                     return false
                 }
@@ -26,6 +29,8 @@ class GlideImageLoader : IImageLoader<ImageView> {
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
+                    //TODO: Практическое задание 2 - реализовать свой кэш картинок. Картинки хранить на диске, в room хранить CahedImage(url, localPath)
+                    //Кэш реализовать в отдельном классе, внедрять сюда через интерфейс
 
                     return false
                 }
