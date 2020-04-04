@@ -1,16 +1,11 @@
 package ru.geekbrains.poplib.ui.fragment
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_repositories.*
 import moxy.MvpAppCompatFragment
@@ -31,7 +26,6 @@ import ru.geekbrains.poplib.ui.image.GlideImageLoader
 class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButtonListener {
 
     companion object {
-        private const val PICK_IMAGE_REQUEST_ID = 1
         fun newInstance() = RepositoriesFragment()
     }
 
@@ -50,7 +44,7 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
     fun providePresenter() = RepositoriesPresenter(
         AndroidSchedulers.mainThread(),
         App.instance.router,
-        GithubRepositoriesRepo(),
+        GithubRepositoriesRepo(ApiHolder.api),
         GithubUsersRepo(ApiHolder.api)
     )
 
@@ -60,6 +54,18 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
         adapter = RepositoriesRVAdapter(presenter.repositoryListPresenter)
         rv_repos.adapter = adapter
 
+        btn_find_user.setOnClickListener {
+            presenter.searchBtnClicked(et_user_name.text.toString())
+        }
+
+    }
+
+    override fun clearSearch() {
+        et_user_name.text.clear()
+    }
+
+    override fun showMessage(text: String) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
 
     override fun updateList() {

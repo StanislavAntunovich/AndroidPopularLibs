@@ -40,9 +40,6 @@ class RepositoriesPresenter(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-        loadUser()
-
-        loadRepos()
 
         repositoryListPresenter.itemClickListener = { itemView ->
             val repository = repositoryListPresenter.repositories[itemView.pos]
@@ -50,27 +47,43 @@ class RepositoriesPresenter(
         }
     }
 
-    fun loadUser() {
-        usersRepo.getUser("googlesamples")
-            .observeOn(mainThreadScheduler)
-            .subscribe({ user ->
-                viewState.setUsername(user.login)
-                viewState.loadAvatar(user.avatarUrl)
-            }, {
-                Timber.e(it)
-            })
+    fun searchBtnClicked(name: String) {
+        if (name.isBlank() || name.isEmpty()) {
+            viewState.showMessage("Please fill user name")
+            return
+        }
+        loadUserData(name)
     }
 
-    fun loadRepos() {
-        repositoriesRepo.getRepos()
+    fun loadUserData(name: String) {
+        clearData()
+        viewState.clearSearch()
+        usersRepo.getUser(name)
+            .observeOn(mainThreadScheduler)
+            .flatMap { user ->
+                viewState.setUsername(user.login)
+                viewState.loadAvatar(user.avatarUrl)
+                return@flatMap repositoriesRepo.getRepos(user.reposUrl)
+            }
             .observeOn(mainThreadScheduler)
             .subscribe({ repos ->
                 repositoryListPresenter.repositories.clear()
                 repositoryListPresenter.repositories.addAll(repos)
                 viewState.updateList()
             }, {
+                it.localizedMessage?.let { message ->
+                    viewState.showMessage(message)
+                }
                 Timber.e(it)
             })
+    }
+
+    private fun clearData() {
+        repositoryListPresenter.repositories.clear()
+        viewState.updateList()
+        viewState.setUsername("")
+        viewState.loadAvatar("")
+
     }
 
     fun backClicked(): Boolean {

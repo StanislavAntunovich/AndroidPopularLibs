@@ -9,4 +9,5 @@
     <string name="convertation_success">Конвертация завершена</string>
     <string name="convertation_cancel">Конвертация отменена</string>
     <string name="convertation_error" >Ошибка при конвертации</string>
+    <string name="search">Search</string>
 </resources>
