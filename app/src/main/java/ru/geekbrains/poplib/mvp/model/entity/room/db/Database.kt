@@ -3,9 +3,8 @@ package ru.geekbrains.poplib.mvp.model.entity.room.db
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ru.geekbrains.poplib.mvp.model.entity.room.MIGRATION_1_2
-import ru.geekbrains.poplib.mvp.model.entity.room.RoomGithubRepository
-import ru.geekbrains.poplib.mvp.model.entity.room.RoomGithubUser
+import ru.geekbrains.poplib.mvp.model.entity.room.*
+import ru.geekbrains.poplib.mvp.model.entity.room.dao.ImagesDao
 import ru.geekbrains.poplib.mvp.model.entity.room.dao.RepositoryDao
 import ru.geekbrains.poplib.mvp.model.entity.room.dao.UserDao
 import java.lang.RuntimeException
@@ -13,13 +12,15 @@ import java.lang.RuntimeException
 @androidx.room.Database(
     entities = [
         RoomGithubUser::class,
-        RoomGithubRepository::class
+        RoomGithubRepository::class,
+        CahedImage::class
     ],
-    version = 2
+    version = 3
 )
 abstract class Database : RoomDatabase() {
     abstract val userDao: UserDao
     abstract val repositoryDao: RepositoryDao
+    abstract val imagesDao: ImagesDao
 
     companion object {
         private const val DB_NAME = "database.db"
@@ -33,7 +34,7 @@ abstract class Database : RoomDatabase() {
         fun create(context: Context) {
             instance ?: let {
                 instance = Room.databaseBuilder(context, Database::class.java, DB_NAME)
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
             }
         }
