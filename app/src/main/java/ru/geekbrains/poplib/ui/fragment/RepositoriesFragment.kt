@@ -1,14 +1,9 @@
 package ru.geekbrains.poplib.ui.fragment
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_repositories.*
@@ -17,6 +12,9 @@ import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.geekbrains.poplib.R
 import ru.geekbrains.poplib.mvp.model.api.ApiHolder
+import ru.geekbrains.poplib.mvp.model.cache.ImageCacheService
+import ru.geekbrains.poplib.mvp.model.cache.RepositoriesCacheService
+import ru.geekbrains.poplib.mvp.model.cache.UserCacheServise
 import ru.geekbrains.poplib.mvp.model.entity.room.db.Database
 import ru.geekbrains.poplib.mvp.model.repo.GithubRepositoriesRepo
 import ru.geekbrains.poplib.mvp.model.repo.GithubUsersRepo
@@ -28,7 +26,6 @@ import ru.geekbrains.poplib.ui.adapter.RepositoriesRVAdapter
 import ru.geekbrains.poplib.ui.image.GlideImageLoader
 import ru.geekbrains.poplib.ui.network.AndroidNetworkStatus
 
-
 class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButtonListener {
 
     companion object {
@@ -39,22 +36,29 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
     @InjectPresenter
     lateinit var presenter: RepositoriesPresenter
 
-    val imageLoader = GlideImageLoader()
-
     var adapter: RepositoriesRVAdapter? = null
 
     val networkStatus = AndroidNetworkStatus(App.instance)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        View.inflate(context, R.layout.fragment_repositories, null)
+    lateinit var  imageLoader: GlideImageLoader
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        imageLoader = GlideImageLoader(networkStatus, ImageCacheService(context = container?.context, database = Database.getInstance()), mainScheduler = AndroidSchedulers.mainThread())
+        return View.inflate(context, R.layout.fragment_repositories, null)
+    }
+
 
 
     @ProvidePresenter
     fun providePresenter() = RepositoriesPresenter(
         AndroidSchedulers.mainThread(),
         App.instance.router,
-        GithubRepositoriesRepo(ApiHolder.api, networkStatus, Database.getInstance()),
-        GithubUsersRepo(ApiHolder.api, networkStatus, Database.getInstance())
+        GithubRepositoriesRepo(
+            ApiHolder.api, networkStatus,
+            UserCacheServise(Database.getInstance()),
+            RepositoriesCacheService(Database.getInstance())
+        ),
+        GithubUsersRepo(ApiHolder.api, networkStatus, UserCacheServise(Database.getInstance()))
     )
 
 
@@ -79,3 +83,4 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
 
     override fun backClicked() = presenter.backClicked()
 }
+
