@@ -35,10 +35,9 @@ class RepositoryFragment : MvpAppCompatFragment(), RepositoryView, BackButtonLis
         View.inflate(context, R.layout.fragment_repository, null)
 
     @ProvidePresenter
-    fun providePresenter() = RepositoryPresenter(
-        arguments!![REPOSITORY_KEY] as GithubRepository,
-        App.instance.router
-    )
+    fun providePresenter() = RepositoryPresenter(arguments!![REPOSITORY_KEY] as GithubRepository).apply {
+        App.instance.appComponent.inject(this)
+    }
 
     override fun init() {
 

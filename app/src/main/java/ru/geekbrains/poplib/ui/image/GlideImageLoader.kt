@@ -7,34 +7,49 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import ru.geekbrains.poplib.mvp.model.cache.image.IImageCache
 import ru.geekbrains.poplib.mvp.model.image.IImageLoader
+import ru.geekbrains.poplib.mvp.model.network.NetworkStatus
+import timber.log.Timber
+import java.io.ByteArrayOutputStream
 
-class GlideImageLoader : IImageLoader<ImageView> {
+class GlideImageLoader(override val cache: IImageCache, val networkStatus: NetworkStatus) : IImageLoader<ImageView> {
     override fun loadInto(url: String, container: ImageView) {
-        //Проверять наличие сети
+        Timber.d("Loading image $url ")
+        networkStatus.isOnlineSingle()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { isOnline ->
+                if (isOnline) {
+                    Timber.d("Online. Loading image from net")
+                    Glide.with(container.context)
+                        .asBitmap()
+                        .load(url)
+                        .listener(object : RequestListener<Bitmap> {
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean) =
+                                Timber.d("Failed to load image $url").let { true }
 
-        Glide.with(container.context)
-            .asBitmap()
-            .load(url) //При отсутствии сети грузить с диска через ByteArray
-            .listener(object : RequestListener<Bitmap> {
-
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                    return false
+                            override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                val compressFormat = if (url.contains(".jpg")) Bitmap.CompressFormat.JPEG else Bitmap.CompressFormat.PNG
+                                val stream = ByteArrayOutputStream()
+                                resource?.compress(compressFormat, 100, stream)
+                                val bytes = stream.use { it.toByteArray() }
+                                cache.saveImage(url, bytes).blockingAwait()
+                                return false
+                            }
+                        })
+                        .into(container)
+                } else {
+                    Timber.d("Offline. Loading image from cache")
+                    cache.getBytes(url).observeOn(AndroidSchedulers.mainThread()).subscribe({
+                        Glide.with(container.context)
+                            .load(it)
+                            .into(container)
+                    }, {
+                        Timber.e(it)
+                    })
                 }
+            }
 
-                override fun onResourceReady(
-                    resource: Bitmap?,
-                    model: Any?,
-                    target: Target<Bitmap>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    //TODO: Практическое задание 2 - реализовать свой кэш картинок. Картинки хранить на диске, в room хранить CahedImage(url, localPath)
-                    //Кэш реализовать в отдельном классе, внедрять сюда через интерфейс
-
-                    return false
-                }
-            })
-            .into(container)
     }
 }
