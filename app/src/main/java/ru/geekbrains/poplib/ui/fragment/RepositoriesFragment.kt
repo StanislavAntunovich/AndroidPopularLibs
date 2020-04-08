@@ -34,18 +34,8 @@ class RepositoriesFragment : MvpAppCompatFragment(), RepositoriesView, BackButto
     @InjectPresenter
     lateinit var presenter: RepositoriesPresenter
 
-    @Inject lateinit var database: Database
 
-    val imageLoader by lazy {
-        val path = (
-                App.instance.externalCacheDir?.path
-                    ?: App.instance.getExternalFilesDir(null)?.path
-                    ?: App.instance.filesDir.path
-                ) + File.separator + "image_cache"
-
-        val cache = RoomImageCache(database, File(path))
-        GlideImageLoader(cache, AndroidNetworkStatus(App.instance))
-    }
+    @Inject lateinit var imageLoader: GlideImageLoader
 
     var adapter: RepositoriesRVAdapter? = null
 

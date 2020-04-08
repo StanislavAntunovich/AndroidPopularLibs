@@ -1,11 +1,7 @@
 package ru.geekbrains.poplib.di
 
 import dagger.Component
-import ru.geekbrains.poplib.di.modules.ApiModule
-import ru.geekbrains.poplib.di.modules.AppModule
-import ru.geekbrains.poplib.di.modules.CacheModule
-import ru.geekbrains.poplib.di.modules.CiceroneModule
-import ru.geekbrains.poplib.di.modules.RepoModule
+import ru.geekbrains.poplib.di.modules.*
 import ru.geekbrains.poplib.mvp.presenter.MainPresenter
 import ru.geekbrains.poplib.mvp.presenter.RepositoriesPresenter
 import ru.geekbrains.poplib.mvp.presenter.RepositoryPresenter
@@ -18,7 +14,9 @@ import javax.inject.Singleton
     modules = [
         AppModule::class,
         RepoModule::class,
-        CiceroneModule::class
+        CiceroneModule::class,
+        DataModule::class,
+        ImageModule::class
     ]
 )
 interface AppComponent {
